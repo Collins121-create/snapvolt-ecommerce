@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnapVolt | Premium Phone Accessories</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    /* Custom responsive styles */
+    @media (max-width: 640px) {
+      .hero-text {
+        font-size: 2.5rem;
+      }
+      .hero-subtext {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    /* Cart sidebar */
+    .cart-slide {
+      transform: translateX(100%);
+      transition: transform 0.3s ease-out;
+    }
+    .cart-slide.open {
+      transform: translateX(0);
+    }
+
+    /* Dark mode */
+    .dark-mode {
+      background-color: #1a202c;
+      color: #f7fafc;
+    }
+    .dark-mode .dark\:text-white {
+      color: #f7fafc;
+    }
+    .dark-mode .dark\:bg-gray-800 {
+      background-color: #2d3748;
+    }
+    .dark-mode .dark\:bg-gray-700 {
+      background-color: #4a5568;
+    }
+    .dark-mode .dark\:border-gray-600 {
+      border-color: #4a5568;
+    }
+    .dark-mode .dark\:text-gray-300 {
+      color: #cbd5e0;
+    }
+    .dark-mode .dark\:text-gray-400 {
+      color: #a0aec0;
+    }
+    .dark-mode .dark\:hover\:bg-gray-700:hover {
+      background-color: #4a5568;
+    }
+    .dark-mode .dark\:hover\:text-indigo-400:hover {
+      color: #818cf8;
+    }
+    .dark-mode .dark\:text-indigo-400 {
+      color: #818cf8;
+    }
+    .dark-mode .dark\:bg-gray-900 {
+      background-color: #1a202c;
+    }
+
+    /* Product card hover effect */
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Custom message box styles */
+    #messageBox {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4CAF50; /* Green */
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+      font-weight: bold;
+      text-align: center;
+      min-width: 200px;
+    }
+    #messageBox.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900 transition-colors duration-200">
+  <div id="messageBox" class="hidden"></div>
+
+  <nav class="p-4 bg-white shadow-md flex justify-between items-center sticky top-0 z-50 dark:bg-gray-800 dark:text-white">
+    <div class="flex items-center space-x-4">
+      <h1 class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">SnapVolt</h1>
+      <div class="hidden md:flex space-x-6">
+        <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400">Home</a>
+        <a href="#products" class="hover:text-indigo-600 dark:hover:text-indigo-400">Products</a>
+        <a href="#testimonials" class="hover:text-indigo-600 dark:hover:text-indigo-400">Reviews</a>
+        <a href="#gallery" class="hover:text-indigo-600 dark:hover:text-indigo-400">Gallery</a>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <div class="relative hidden md:block">
+        <input type="text" placeholder="Search..." class="pl-10 pr-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+      </div>
+
+      <button id="darkModeToggle" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+        <i class="fas fa-moon dark:hidden"></i>
+        <i class="fas fa-sun hidden dark:block text-yellow-300"></i>
+      </button>
+
+      <button id="accountBtn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+        <i class="fas fa-user"></i>
+      </button>
+
+      <div class="relative">
+        <button id="cartBtn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cartCount" class="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+        </button>
+      </div>
+
+      <button id="mobileMenuBtn" class="md:hidden p-2">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg absolute w-full z-40 dark:bg-gray-800">
+    <div class="flex flex-col space-y-3 p-4">
+      <input type="text" placeholder="Search..." class="p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+      <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400">Home</a>
+      <a href="#products" class="hover:text-indigo-600 dark:hover:text-indigo-400">Products</a>
+      <a href="#testimonials" class="hover:text-indigo-600 dark:hover:text-indigo-400">Reviews</a>
+      <a href="#gallery" class="hover:text-indigo-600 dark:hover:text-indigo-400">Gallery</a>
+      <button id="mobileAccountBtn" class="text-left hover:text-indigo-600 dark:hover:text-indigo-400">Account</button>
+    </div>
+  </div>
+
+  <header class="relative text-center py-20 md:py-32 bg-gradient-to-r from-indigo-500 to-purple-600 text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black opacity-20"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4">
+      <h2 class="hero-text text-4xl md:text-6xl font-bold mb-6 animate-fadeIn" style="animation-delay: 0.2s">Power Up Your Phone Style ⚡</h2>
+      <p class="hero-subtext text-xl md:text-2xl mb-8 animate-fadeIn" style="animation-delay: 0.4s">Premium accessories that blend cutting-edge tech with sleek design</p>
+      <a href="#products" class="inline-block bg-white text-indigo-600 px-8 py-3 rounded-full font-bold hover:bg-gray-100 transition duration-300 animate-fadeIn" style="animation-delay: 0.6s">Shop Now</a>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 h-16 bg-white dark:bg-gray-100 transform skew-y-2 origin-bottom"></div>
+  </header>
+
+  <section class="py-12 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12 dark:text-white">Shop By Category</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
+        <a href="#" class="category-card bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition duration-300 dark:bg-gray-700">
+          <div class="p-4 sm:p-6 text-center">
+            <i class="fas fa-mobile-alt text-3xl sm:text-4xl text-indigo-600 mb-3 sm:mb-4 dark:text-indigo-400"></i>
+            <h3 class="font-semibold text-sm sm:text-lg dark:text-white">Phone Cases</h3>
+          </div>
+        </a>
+        <a href="#" class="category-card bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition duration-300 dark:bg-gray-700">
+          <div class="p-4 sm:p-6 text-center">
+            <i class="fas fa-shield-alt text-3xl sm:text-4xl text-indigo-600 mb-3 sm:mb-4 dark:text-indigo-400"></i>
+            <h3 class="font-semibold text-sm sm:text-lg dark:text-white">Screen Protectors</h3>
+          </div>
+        </a>
+        <a href="#" class="category-card bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition duration-300 dark:bg-gray-700">
+          <div class="p-4 sm:p-6 text-center">
+            <i class="fas fa-bolt text-3xl sm:text-4xl text-indigo-600 mb-3 sm:mb-4 dark:text-indigo-400"></i>
+            <h3 class="font-semibold text-sm sm:text-lg dark:text-white">Chargers</h3>
+          </div>
+        </a>
+        <a href="#" class="category-card bg-gray-100 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition duration-300 dark:bg-gray-700">
+          <div class="p-4 sm:p-6 text-center">
+            <i class="fas fa-car text-3xl sm:text-4xl text-indigo-600 mb-3 sm:mb-4 dark:text-indigo-400"></i>
+            <h3 class="font-semibold text-sm sm:text-lg dark:text-white">Car Mounts</h3>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="products" class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold mb-4 md:mb-0 dark:text-white">Featured Products</h2>
+        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+          <select id="filterCategory" class="p-2 border rounded bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <option value="all">All Categories</option>
+            <option value="cases">Cases</option>
+            <option value="protectors">Screen Protectors</option>
+            <option value="chargers">Chargers</option>
+            <option value="mounts">Mounts</option>
+          </select>
+          <select id="filterSort" class="p-2 border rounded bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <option value="popular">Popular</option>
+            <option value="newest">Newest</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <!-- Products will be dynamically loaded here -->
+      </div>
+
+      <div class="text-center mt-12">
+        <button id="loadMore" class="bg-indigo-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-indigo-700 transition duration-300">Load More Products</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonials" class="py-16 bg-white dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12 dark:text-white">What Our Customers Say</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+        <div class="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-md dark:bg-gray-700">
+          <div class="flex items-center mb-4">
+            <div class="h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-3 sm:mr-4">JD</div>
+            <div>
+              <h4 class="font-semibold text-sm sm:text-base dark:text-white">John D.</h4>
+              <div class="flex text-yellow-400 text-xs sm:text-sm">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm sm:text-base dark:text-gray-300">"The SnapVolt case saved my phone from multiple drops. The quality is outstanding and it looks great too!"</p>
+        </div>
+        <div class="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-md dark:bg-gray-700">
+          <div class="flex items-center mb-4">
+            <div class="h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-3 sm:mr-4">SM</div>
+            <div>
+              <h4 class="font-semibold text-sm sm:text-base dark:text-white">Sarah M.</h4>
+              <div class="flex text-yellow-400 text-xs sm:text-sm">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm sm:text-base dark:text-gray-300">"Fast shipping and excellent customer service. The wireless charger works perfectly with my phone."</p>
+        </div>
+        <div class="bg-gray-50 p-4 sm:p-6 rounded-lg shadow-md dark:bg-gray-700">
+          <div class="flex items-center mb-4">
+            <div class="h-10 sm:h-12 w-10 sm:w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-3 sm:mr-4">AT</div>
+            <div>
+              <h4 class="font-semibold text-sm sm:text-base dark:text-white">Alex T.</h4>
+              <div class="flex text-yellow-400 text-xs sm:text-sm">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600 text-sm sm:text-base dark:text-gray-300">"Best screen protector I've ever used. Easy to install and feels just like the original screen."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery" class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-6 dark:text-white">#SnapVoltStyle</h2>
+      <p class="text-center text-gray-600 mb-8 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base dark:text-gray-400">See how our customers are styling their SnapVolt accessories</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+        <div class="gallery-item overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+          <img src="https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Phone case" class="w-full h-32 sm:h-48 object-cover hover:scale-105 transition duration-300">
+        </div>
+        <div class="gallery-item overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+          <img src="https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Wireless charger" class="w-full h-32 sm:h-48 object-cover hover:scale-105 transition duration-300">
+        </div>
+        <div class="gallery-item overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+          <img src="https://images.unsplash.com/photo-1546054454-aa26e2b734c7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Car mount" class="w-full h-32 sm:h-48 object-cover hover:scale-105 transition duration-300">
+        </div>
+        <div class="gallery-item overflow-hidden rounded-lg shadow-md hover:shadow-xl transition duration-300">
+          <img src="https://images.unsplash.com/photo-1605170439002-90845e8c0137?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Phone accessories" class="w-full h-32 sm:h-48 object-cover hover:scale-105 transition duration-300">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 sm:py-16 bg-indigo-600 text-white">
+    <div class="container mx-auto px-4 text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold mb-4">Stay Updated</h2>
+      <p class="mb-6 sm:mb-8 max-w-2xl mx-auto text-sm sm:text-base">Subscribe to our newsletter for the latest products, exclusive deals, and tech tips.</p>
+      <form class="max-w-md mx-auto flex flex-col sm:flex-row">
+        <input type="email" placeholder="Your email" class="flex-grow px-4 py-2 sm:py-3 rounded sm:rounded-r-none mb-2 sm:mb-0 focus:outline-none text-gray-900">
+        <button type="submit" class="bg-indigo-800 px-6 py-2 sm:py-3 rounded sm:rounded-l-none font-semibold hover:bg-indigo-900 transition duration-300">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="bg-gray-800 text-gray-300 py-8 sm:py-12">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+        <div>
+          <h3 class="text-xl font-bold text-white mb-3 sm:mb-4">SnapVolt</h3>
+          <p class="mb-3 sm:mb-4 text-sm sm:text-base">Premium phone accessories that combine style, protection, and innovation.</p>
+          <div class="flex space-x-3 sm:space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-pinterest"></i></a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold text-white mb-3 sm:mb-4">Shop</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Phone Cases</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Screen Protectors</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Chargers</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Car Mounts</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">New Arrivals</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold text-white mb-3 sm:mb-4">Help</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">FAQs</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Shipping & Returns</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Product Care</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Warranty</a></li>
+            <li><a href="#" class="hover:text-white text-sm sm:text-base">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-lg font-semibold text-white mb-3 sm:mb-4">Contact</h4>
+          <address class="not-italic text-sm sm:text-base">
+            <p class="mb-1 sm:mb-2">123 Tech Street</p>
+            <p class="mb-1 sm:mb-2">San Francisco, CA 94107</p>
+            <p class="mb-1 sm:mb-2">Phone: (123) 456-7890</p>
+            <p class="mb-1 sm:mb-2">Email: info@snapvolt.com</p>
+          </address>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-8 pt-8 text-sm text-center">
+        <p>&copy; 2025 SnapVolt. All rights reserved. | <a href="#" class="hover:text-white">Privacy Policy</a> | <a href="#" class="hover:text-white">Terms of Service</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <div id="cartSidebar" class="fixed top-0 right-0 h-full w-full sm:w-96 bg-white shadow-xl z-50 cart-slide dark:bg-gray-800 dark:text-white">
+    <div class="p-4 sm:p-6 h-full flex flex-col">
+      <div class="flex justify-between items-center mb-4 sm:mb-6">
+        <h3 class="text-xl font-bold">Your Cart</h3>
+        <button id="closeCart" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div id="cartItems" class="flex-grow overflow-y-auto">
+        <p class="text-center text-gray-500 py-8">Your cart is empty</p>
+      </div>
+
+      <div class="border-t pt-4">
+        <div class="flex justify-between mb-2">
+          <span>Subtotal:</span>
+          <span id="cartSubtotal">$0.00</span>
+        </div>
+        <div class="flex justify-between mb-4">
+          <span>Shipping:</span>
+          <span>Calculated at checkout</span>
+        </div>
+        <button id="checkoutBtn" class="w-full bg-indigo-600 text-white py-2 sm:py-3 rounded font-semibold hover:bg-indigo-700 transition duration-300">Checkout</button>
+        <p class="text-xs sm:text-sm text-center text-gray-500 mt-2">Free shipping on orders over $50</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 sm:mx-6 dark:bg-gray-800">
+      <div class="p-4 sm:p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold dark:text-white">Login or Register</h3>
+          <button id="closeLoginModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="mb-4 sm:mb-6">
+          <ul class="flex border-b">
+            <li class="mr-1">
+              <button id="loginTab" class="bg-white inline-block py-2 px-4 font-semibold border-b-2 border-indigo-600 dark:bg-gray-800 dark:text-white">Login</button>
+            </li>
+            <li class="mr-1">
+              <button id="registerTab" class="bg-white inline-block py-2 px-4 font-semibold text-gray-500 hover:text-indigo-600 dark:bg-gray-800 dark:hover:text-indigo-400">Register</button>
+            </li>
+          </ul>
+        </div>
+
+        <form id="loginForm" class="mb-4">
+          <div class="mb-4">
+            <label for="loginEmail" class="block text-gray-700 mb-2 text-sm sm:text-base dark:text-gray-300">Email</label>
+            <input type="email" id="loginEmail" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          </div>
+          <div class="mb-4 sm:mb-6">
+            <label for="loginPassword" class="block text-gray-700 mb-2 text-sm sm:text-base dark:text-gray-300">Password</label>
+            <input type="password" id="loginPassword" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition duration-300">Login</button>
+        </form>
+
+        <form id="registerForm" class="hidden">
+          <div class="mb-4">
+            <label for="registerName" class="block text-gray-700 mb-2 text-sm sm:text-base dark:text-gray-300">Full Name</label>
+            <input type="text" id="registerName" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          </div>
+          <div class="mb-4">
+            <label for="registerEmail" class="block text-gray-700 mb-2 text-sm sm:text-base dark:text-gray-300">Email</label>
+            <input type="email" id="registerEmail" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          </div>
+          <div class="mb-4 sm:mb-6">
+            <label for="registerPassword" class="block text-gray-700 mb-2 text-sm sm:text-base dark:text-gray-300">Password</label>
+            <input type="password" id="registerPassword" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          </div>
+          <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition duration-300">Register</button>
+        </form>
+
+        <div class="text-center mt-4">
+          <button class="text-indigo-600 hover:text-indigo-800 text-sm sm:text-base dark:text-indigo-400 dark:hover:text-indigo-300">Forgot password?</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="quickViewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl mx-4 sm:mx-6 dark:bg-gray-800">
+      <div class="p-4 sm:p-6">
+        <div class="flex justify-between items-start mb-4">
+          <h3 id="quickViewTitle" class="text-xl font-bold dark:text-white">Product Name</h3>
+          <button id="closeQuickView" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4 sm:gap-6">
+          <div class="md:w-1/2">
+            <div class="relative">
+              <img id="quickViewImage" src="" alt="Product" class="w-full rounded-lg">
+              <div id="quickViewNewBadge" class="absolute bottom-2 left-2 bg-indigo-600 text-white px-2 py-1 rounded text-xs sm:text-sm hidden">New</div>
+            </div>
+            <div id="quickViewThumbnails" class="grid grid-cols-4 gap-1 sm:gap-2 mt-2">
+              </div>
+          </div>
+
+          <div class="md:w-1/2">
+            <div class="flex items-center mb-2">
+              <div id="quickViewStars" class="flex text-yellow-400 mr-2 text-xs sm:text-sm">
+                </div>
+              <span id="quickViewReviews" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">(0 reviews)</span>
+            </div>
+
+            <div class="mb-4">
+              <span id="quickViewPrice" class="text-xl sm:text-2xl font-bold text-indigo-600 dark:text-indigo-400">$29.99</span>
+              <span id="quickViewOldPrice" class="text-xs sm:text-sm text-gray-500 line-through ml-2 hidden">$39.99</span>
+            </div>
+
+            <p id="quickViewDescription" class="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base dark:text-gray-300">Product description goes here with all the details about the features and benefits.</p>
+
+            <div class="flex flex-col gap-2 mb-4 sm:mb-6">
+              <button id="generateDescriptionBtn" class="w-full bg-blue-500 text-white py-2 rounded font-semibold hover:bg-blue-600 transition duration-300 text-sm sm:text-base">✨ Generate More Description</button>
+              <div id="generatedDescriptionOutput" class="text-gray-700 bg-gray-100 p-3 rounded-md hidden dark:bg-gray-700 dark:text-gray-300 text-sm">
+                <!-- AI-generated description will appear here -->
+              </div>
+            </div>
+
+            <div class="mb-4 sm:mb-6">
+              <div id="quickViewColors" class="flex items-center mb-2 hidden">
+                <span class="font-semibold mr-2 text-sm sm:text-base dark:text-white">Color:</span>
+                <div class="flex space-x-2">
+                  </div>
+              </div>
+
+              <div class="flex items-center">
+                <span class="font-semibold mr-4 text-sm sm:text-base dark:text-white">Quantity:</span>
+                <div class="flex items-center border rounded">
+                  <button id="quickViewQuantityMinus" class="px-2 sm:px-3 py-1 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">-</button>
+                  <span id="quickViewQuantity" class="px-2 sm:px-3 py-1">1</span>
+                  <button id="quickViewQuantityPlus" class="px-2 sm:px-3 py-1 text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex space-x-2 sm:space-x-4">
+              <button id="quickViewAddToCartBtn" class="flex-grow bg-indigo-600 text-white py-2 sm:py-3 rounded font-semibold hover:bg-indigo-700 transition duration-300 text-sm sm:text-base" data-product-id="">Add to Cart</button>
+              <button class="p-2 sm:p-3 border rounded text-indigo-600 hover:bg-gray-100 dark:text-indigo-400 dark:hover:bg-gray-700">
+                <i class="far fa-heart"></i>
+              </button>
+            </div>
+
+            <div class="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
+                <button id="analyzeReviewsBtn" class="w-full bg-purple-500 text-white py-2 rounded font-semibold hover:bg-purple-600 transition duration-300 text-sm sm:text-base mb-2">✨ Analyze Reviews Sentiment</button>
+                <div id="reviewSentimentOutput" class="text-gray-700 bg-gray-100 p-3 rounded-md hidden dark:bg-gray-700 dark:text-gray-300 text-sm">
+                  <!-- AI-generated review sentiment will appear here -->
+                </div>
+              <div class="flex items-center mb-2">
+                <i class="fas fa-truck text-indigo-600 mr-2 text-sm sm:text-base dark:text-indigo-400"></i>
+                <span class="text-xs sm:text-sm dark:text-gray-300">Free shipping on orders over $50</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-undo text-indigo-600 mr-2 text-sm sm:text-base dark:text-indigo-400"></i>
+                <span class="text-xs sm:text-sm dark:text-gray-300">30-day return policy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configuration: Set your API base URL here
+    // IMPORTANT: This should point to your backend server.
+    // If running locally, it's typically 'http://127.0.0.1:5000/api/' or 'http://localhost:5000/api/'
+    // If deployed, replace with your actual server URL.
+    const BASE_API_URL = 'http://127.0.0.1:5000/api/'; 
+
+    // DOM Elements
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const cartBtn = document.getElementById('cartBtn');
+    const cartSidebar = document.getElementById('cartSidebar');
+    const closeCart = document.getElementById('closeCart');
+    const accountBtn = document.getElementById('accountBtn');
+    const mobileAccountBtn = document.getElementById('mobileAccountBtn'); // Added for mobile menu
+    const loginModal = document.getElementById('loginModal');
+    const closeLoginModal = document.getElementById('closeLoginModal');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const productGrid = document.getElementById('productGrid');
+    const filterCategory = document.getElementById('filterCategory');
+    const filterSort = document.getElementById('filterSort'); // Added sort filter
+    const loadMoreBtn = document.getElementById('loadMore'); // Added load more button
+    const cartCount = document.getElementById('cartCount');
+    const cartItemsContainer = document.getElementById('cartItems');
+    const cartSubtotalSpan = document.getElementById('cartSubtotal');
+    const messageBox = document.getElementById('messageBox');
+
+    // Quick View Modal Elements
+    const quickViewModal = document.getElementById('quickViewModal');
+    const closeQuickViewBtn = document.getElementById('closeQuickView');
+    const quickViewTitle = document.getElementById('quickViewTitle');
+    const quickViewImage = document.getElementById('quickViewImage');
+    const quickViewNewBadge = document.getElementById('quickViewNewBadge');
+    const quickViewThumbnails = document.getElementById('quickViewThumbnails');
+    const quickViewStars = document.getElementById('quickViewStars');
+    const quickViewReviews = document.getElementById('quickViewReviews');
+    const quickViewPrice = document.getElementById('quickViewPrice');
+    const quickViewOldPrice = document.getElementById('quickViewOldPrice');
+    const quickViewDescription = document.getElementById('quickViewDescription');
+    const quickViewColors = document.getElementById('quickViewColors');
+    const quickViewQuantityMinus = document.getElementById('quickViewQuantityMinus');
+    const quickViewQuantity = document.getElementById('quickViewQuantity');
+    const quickViewQuantityPlus = document.getElementById('quickViewQuantityPlus');
+    const quickViewAddToCartBtn = document.getElementById('quickViewAddToCartBtn');
+
+    // LLM-related elements
+    const generateDescriptionBtn = document.getElementById('generateDescriptionBtn');
+    const generatedDescriptionOutput = document.getElementById('generatedDescriptionOutput');
+    const analyzeReviewsBtn = document.getElementById('analyzeReviewsBtn');
+    const reviewSentimentOutput = document.getElementById('reviewSentimentOutput');
+
+
+    // --- Global State Variables ---
+    let allProducts = []; // Will store all products fetched from backend to enable quick view logic
+    let currentProductsDisplayed = 0;
+    let productsPerPage = 8; // Number of products to show initially and on "Load More"
+    let cart = []; // Stores { id, name, price, image, quantity } - still client-side for simplicity
+
+
+    // --- Utility Functions ---
+
+    /**
+     * Displays a temporary message box at the top of the screen.
+     * @param {string} message - The message to display.
+     * @param {string} type - 'success' (green), 'error' (red), 'info' (blue).
+     */
+    function showMessage(message, type = 'info') {
+      messageBox.textContent = message;
+      messageBox.className = 'message-box show'; // Reset classes and add 'show'
+
+      // Apply type-specific background color
+      if (type === 'success') {
+        messageBox.style.backgroundColor = '#4CAF50'; // Green
+      } else if (type === 'error') {
+        messageBox.style.backgroundColor = '#F44336'; // Red
+      } else {
+        messageBox.style.backgroundColor = '#2196F3'; // Blue (info)
+      }
+
+      messageBox.classList.remove('hidden'); // Ensure it's visible
+
+      setTimeout(() => {
+        messageBox.classList.remove('show');
+        messageBox.classList.add('hidden'); // Hide after animation
+      }, 3000); // Message visible for 3 seconds
+    }
+
+    /**
+     * Toggles the visibility of a given HTML element by adding/removing 'hidden' class.
+     * @param {HTMLElement} element - The HTML element to toggle.
+     * @param {boolean} [force] - If true, forces show; if false, forces hide.
+     */
+    function toggleVisibility(element, force) {
+      if (typeof force === 'boolean') {
+        element.classList.toggle('hidden', !force);
+      } else {
+        element.classList.toggle('hidden');
+      }
+    }
+
+    /**
+     * Applies or removes dark mode based on current state or a forced value.
+     * Saves the preference to localStorage.
+     * @param {boolean} [force] - If true, forces dark mode; if false, forces light mode.
+     */
+    function applyDarkMode(force) {
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      let shouldEnableDarkMode = force === undefined ? !isDarkMode : force;
+
+      if (shouldEnableDarkMode) {
+        document.body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    /**
+     * Saves the current cart array to localStorage.
+     * For a real backend, this would involve sending cart updates to the server.
+     */
+    function saveCartToLocalStorage() {
+      try {
+        localStorage.setItem('snapvoltCart', JSON.stringify(cart));
+      } catch (e) {
+        console.error('Error saving cart to local storage:', e);
+      }
+    }
+
+    /**
+     * Loads the cart array from localStorage.
+     * For a real backend, this would involve fetching user's cart from the server on login.
+     */
+    function loadCartFromLocalStorage() {
+      try {
+        const storedCart = localStorage.getItem('snapvoltCart');
+        if (storedCart) {
+          cart = JSON.parse(storedCart);
+        }
+      } catch (e) {
+        console.error('Error loading cart from local storage:', e);
+        cart = []; // Reset cart if corrupted
+      }
+    }
+
+    /**
+     * Renders the star rating HTML based on a given rating value.
+     * @param {number} rating - The rating value (e.g., 4.5).
+     * @returns {string} HTML string for star icons.
+     */
+    function getStarRatingHtml(rating) {
+      let starsHtml = '';
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating % 1 !== 0;
+
+      for (let i = 0; i < fullStars; i++) {
+        starsHtml += '<i class="fas fa-star"></i>';
+      }
+      if (hasHalfStar) {
+        starsHtml += '<i class="fas fa-star-half-alt"></i>';
+      }
+      const emptyStars = 5 - Math.ceil(rating);
+      for (let i = 0; i < emptyStars; i++) {
+        starsHtml += '<i class="far fa-star"></i>'; // Use far for empty stars
+      }
+      return starsHtml;
+    }
+
+    /**
+     * Fetches products from the backend API based on current filters and sort order.
+     * @param {number} offset - The starting index for products to fetch.
+     * @param {number} limit - The maximum number of products to fetch.
+     * @param {boolean} append - If true, appends products; otherwise, replaces existing.
+     */
+    async function fetchAndRenderProducts(offset = 0, limit = productsPerPage, append = false) {
+      const category = filterCategory.value;
+      const sort = filterSort.value;
+
+      try {
+        // Construct the URL to your backend products API
+        const url = `${BASE_API_URL}products?category=${category}&sort=${sort}&limit=${limit}&offset=${offset}`;
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        let productsFromBackend = data.products;
+        let totalProducts = data.total;
+
+        if (!append) {
+          productGrid.innerHTML = ''; // Clear existing products if not appending
+          allProducts = productsFromBackend; // Store all filtered/sorted products for quick view
+        } else {
+          allProducts = allProducts.concat(productsFromBackend); // Append new batch to current display
+        }
+
+        renderProducts(productsFromBackend, append); // Render the fetched products
+
+        currentProductsDisplayed = Math.min(offset + productsFromBackend.length, totalProducts); // Correctly track displayed count
+
+        // Hide "Load More" button if all products are displayed for the current filter/sort
+        if (currentProductsDisplayed >= totalProducts) {
+          loadMoreBtn.classList.add('hidden');
+        } else {
+          loadMoreBtn.classList.remove('hidden');
+        }
+
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        showMessage('Failed to load products. Please try again later.', 'error');
+      }
+    }
+
+
+    /**
+     * Renders products into the product grid based on the provided array.
+     * @param {Array} productsToRender - The array of product objects to display.
+     * @param {boolean} append - If true, appends products; otherwise, replaces existing.
+     */
+    function renderProducts(productsToRender, append = false) {
+      // If not appending, clear the existing grid.
+      if (!append) {
+        productGrid.innerHTML = '';
+      }
+
+      // Iterate through each product and create its HTML card.
+      productsToRender.forEach(product => {
+        const productCard = document.createElement('div');
+        productCard.className = 'product-card bg-white rounded-lg shadow-md hover:shadow-xl transition duration-300 overflow-hidden dark:bg-gray-700';
+        productCard.innerHTML = `
+          <div class="relative">
+            <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover">
+            ${product.isNew ? '<div class="absolute top-2 left-2 bg-indigo-600 text-white px-2 py-1 rounded text-xs">New</div>' : ''}
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-lg mb-1 dark:text-white">${product.name}</h3>
+            <p class="text-gray-600 text-sm mb-2 dark:text-gray-300">${product.category.charAt(0).toUpperCase() + product.category.slice(1)}</p>
+            <div class="flex items-center mb-2">
+              <div class="flex text-yellow-400 mr-2 text-sm">
+                ${getStarRatingHtml(product.rating)}
+              </div>
+              <span class="text-xs text-gray-600 dark:text-gray-400">(${product.reviews} reviews)</span>
+            </div>
+            <div class="flex items-baseline mb-4">
+              <span class="text-xl font-bold text-indigo-600 dark:text-indigo-400">$${product.price.toFixed(2)}</span>
+              ${product.oldPrice ? `<span class="text-sm text-gray-500 line-through ml-2">$${product.oldPrice.toFixed(2)}</span>` : ''}
+            </div>
+            <div class="flex space-x-2">
+              <button class="add-to-cart-btn flex-grow bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition duration-300 text-sm" data-product-id="${product.id}">Add to Cart</button>
+              <button class="quick-view-btn p-2 border rounded text-indigo-600 hover:bg-gray-100 dark:text-indigo-400 dark:hover:bg-gray-700" data-product-id="${product.id}">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        productGrid.appendChild(productCard);
+      });
+    }
+
+    /**
+     * Filters and sorts products by refetching from the backend.
+     */
+    function filterAndSortProducts() {
+      currentProductsDisplayed = 0; // Reset count for new filter/sort
+      allProducts = []; // Clear current products to force a fresh fetch
+      fetchAndRenderProducts(0, productsPerPage); // Fetch initial set of filtered/sorted products
+    }
+
+    /**
+     * Loads a batch of products to display, handling "Load More" functionality.
+     */
+    function loadMoreProducts() {
+      fetchAndRenderProducts(currentProductsDisplayed, productsPerPage, true); // Append
+    }
+
+    /**
+     * Adds a product to the cart or updates its quantity if already present.
+     * This remains client-side for simplicity, but would be a backend call in a real app.
+     * @param {string} productId - The ID of the product to add.
+     * @param {number} quantityToAdd - The quantity to add.
+     */
+    function addToCart(productId, quantityToAdd = 1) {
+      // Find the product in the currently loaded 'allProducts' array
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) {
+          console.error("Product not found in current list:", productId);
+          showMessage('Product not found.', 'error');
+          return;
+      }
+
+      const existingItem = cart.find(item => item.id === productId);
+
+      if (existingItem) {
+        existingItem.quantity += quantityToAdd;
+      } else {
+        cart.push({
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          quantity: quantityToAdd
+        });
+      }
+      saveCartToLocalStorage();
+      updateCartUI();
+      showMessage(`${quantityToAdd} x ${product.name} added to cart!`, 'success');
+    }
+
+    /**
+     * Removes a product from the cart.
+     * This remains client-side for simplicity, but would be a backend call in a real app.
+     * @param {string} productId - The ID of the product to remove.
+     */
+    function removeFromCart(productId) {
+      const initialLength = cart.length;
+      cart = cart.filter(item => item.id !== productId);
+      if (cart.length < initialLength) {
+        saveCartToLocalStorage();
+        updateCartUI();
+        showMessage('Item removed from cart.', 'info');
+      }
+    }
+
+    /**
+     * Updates the quantity of a specific item in the cart.
+     * This remains client-side for simplicity, but would be a backend call in a real app.
+     * @param {string} productId - The ID of the product.
+     * @param {number} newQuantity - The new quantity.
+     */
+    function updateCartItemQuantity(productId, newQuantity) {
+      const item = cart.find(i => i.id === productId);
+      if (item) {
+        if (newQuantity <= 0) {
+          removeFromCart(productId);
+        } else {
+          item.quantity = newQuantity;
+          saveCartToLocalStorage();
+          updateCartUI();
+        }
+      }
+    }
+
+    /**
+     * Renders the cart items in the sidebar and updates the total.
+     */
+    function updateCartUI() {
+      cartItemsContainer.innerHTML = ''; // Clear existing items
+      let subtotal = 0;
+      let totalItems = 0;
+
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p class="text-center text-gray-500 py-8 dark:text-gray-400">Your cart is empty</p>';
+        cartCount.classList.add('hidden');
+      } else {
+        cartCount.classList.remove('hidden');
+        cart.forEach(item => {
+          const itemTotal = item.price * item.quantity;
+          subtotal += itemTotal;
+          totalItems += item.quantity;
+
+          const cartItemDiv = document.createElement('div');
+          cartItemDiv.className = 'flex items-center justify-between py-3 border-b last:border-b-0 dark:border-gray-700';
+          cartItemDiv.innerHTML = `
+            <div class="flex items-center">
+              <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-md mr-4">
+              <div>
+                <h4 class="font-semibold dark:text-white">${item.name}</h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400">$${item.price.toFixed(2)} x ${item.quantity}</p>
+                <p class="text-sm font-bold dark:text-white">$${itemTotal.toFixed(2)}</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button class="cart-quantity-minus p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-product-id="${item.id}">-</button>
+              <span class="text-sm dark:text-white">${item.quantity}</span>
+              <button class="cart-quantity-plus p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700" data-product-id="${item.id}">+</button>
+              <button class="remove-from-cart-btn text-red-500 hover:text-red-700 p-1 rounded dark:hover:text-red-400" data-product-id="${item.id}">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          `;
+          cartItemsContainer.appendChild(cartItemDiv);
+        });
+      }
+
+      cartSubtotalSpan.textContent = `$${subtotal.toFixed(2)}`;
+      cartCount.textContent = totalItems;
+    }
+
+    /**
+     * Populates and displays the quick view modal with product details.
+     * @param {string} productId - The ID of the product to display.
+     */
+    function openQuickViewModal(productId) {
+      // Find the product in the 'allProducts' array that has been fetched.
+      const product = allProducts.find(p => p.id === productId);
+      if (!product) {
+          console.error("Product not found for quick view:", productId);
+          showMessage('Product details not available.', 'error');
+          return;
+      }
+
+      // Reset LLM outputs
+      generatedDescriptionOutput.classList.add('hidden');
+      generatedDescriptionOutput.textContent = '';
+      reviewSentimentOutput.classList.add('hidden');
+      reviewSentimentOutput.textContent = '';
+
+
+      quickViewTitle.textContent = product.name;
+      quickViewImage.src = product.image;
+      quickViewImage.alt = product.name;
+      quickViewNewBadge.classList.toggle('hidden', !product.isNew);
+      quickViewStars.innerHTML = getStarRatingHtml(product.rating);
+      quickViewReviews.textContent = `(${product.reviews} reviews)`;
+      quickViewPrice.textContent = `$${product.price.toFixed(2)}`;
+      quickViewOldPrice.classList.toggle('hidden', !product.oldPrice);
+      if (product.oldPrice) {
+        quickViewOldPrice.textContent = `$${product.oldPrice.toFixed(2)}`;
+      }
+      quickViewDescription.textContent = product.description;
+      quickViewAddToCartBtn.dataset.productId = product.id; // Set product ID for add to cart
+
+      // Store current product data in button datasets for LLM functions
+      generateDescriptionBtn.dataset.productName = product.name;
+      generateDescriptionBtn.dataset.productDescription = product.description;
+      // Ensure mockReviewsText is available for AI analysis
+      analyzeReviewsBtn.dataset.productName = product.name;
+      analyzeReviewsBtn.dataset.productReviewsText = product.mockReviewsText || ''; 
+
+      // Render thumbnails
+      quickViewThumbnails.innerHTML = '';
+      if (product.thumbnails && product.thumbnails.length > 0) {
+          product.thumbnails.forEach(thumb => {
+            const img = document.createElement('img');
+            img.src = thumb;
+            img.alt = 'Thumbnail';
+            img.className = 'cursor-pointer border rounded hover:border-indigo-600';
+            img.addEventListener('click', () => quickViewImage.src = thumb); // Change main image on thumbnail click
+            quickViewThumbnails.appendChild(img);
+          });
+      }
+
+      // Render colors
+      quickViewColors.classList.toggle('hidden', !product.colors || product.colors.length === 0);
+      const colorButtonsContainer = quickViewColors.querySelector('div.flex.space-x-2');
+      if (colorButtonsContainer) {
+        colorButtonsContainer.innerHTML = '';
+        if (product.colors && product.colors.length > 0) {
+            product.colors.forEach(color => {
+              const btn = document.createElement('button');
+              btn.className = `w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500`;
+              btn.style.backgroundColor = color;
+              colorButtonsContainer.appendChild(btn);
+            });
+        }
+      }
+
+      // Reset quantity to 1
+      quickViewQuantity.textContent = '1';
+
+      toggleVisibility(quickViewModal, true);
+    }
+
+    // --- Backend API Calls ---
+
+    /**
+     * Handles user login by sending credentials to the backend.
+     * @param {string} email
+     * @param {string} password
+     */
+    async function handleLogin(email, password) {
+      try {
+        const response = await fetch(`${BASE_API_URL}auth?action=login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          showMessage(data.message, 'success');
+          toggleVisibility(loginModal, false);
+          // In a real app, you'd store the authentication token (JWT) received here
+          // and manage user session (e.g., display user name, fetch user-specific data)
+          console.log('User logged in:', data.user);
+        } else {
+          showMessage(data.message || 'Login failed.', 'error');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showMessage('An error occurred during login.', 'error');
+      }
+    }
+
+    /**
+     * Handles user registration by sending data to the backend.
+     * @param {string} name
+     * @param {string} email
+     * @param {string} password
+     */
+    async function handleRegister(name, email, password) {
+      try {
+        const response = await fetch(`${BASE_API_URL}auth?action=register`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          showMessage(data.message, 'success');
+          toggleVisibility(loginModal, false);
+        } else {
+          showMessage(data.message || 'Registration failed.', 'error');
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        showMessage('An error occurred during registration.', 'error');
+      }
+    }
+
+    // --- Gemini API Integrations ---
+
+    /**
+     * Calls the Gemini API to generate a more detailed product description.
+     * @param {string} productName - The name of the product.
+     * @param {string} currentDescription - The existing brief description.
+     */
+    async function generateProductDescription(productName, currentDescription) {
+        generatedDescriptionOutput.classList.remove('hidden');
+        generatedDescriptionOutput.textContent = 'Generating description...';
+        generatedDescriptionOutput.style.color = '#60A5FA'; // Blue for loading
+
+        try {
+            const prompt = `Expand the following product description for "${productName}" by adding more engaging details, features, and benefits. The original description is: "${currentDescription}". Make it sound appealing to an e-commerce customer.`;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas provides API key at runtime
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                const text = result.candidates[0].content.parts[0].text;
+                generatedDescriptionOutput.textContent = text;
+                generatedDescriptionOutput.style.color = ''; // Reset color
+                showMessage('AI description generated!', 'success');
+            } else {
+                generatedDescriptionOutput.textContent = 'Failed to generate description. Please try again.';
+                generatedDescriptionOutput.style.color = '#F44336'; // Red for error
+                console.error('Gemini API response structure unexpected:', result);
+                showMessage('AI description failed.', 'error');
+            }
+        } catch (error) {
+            console.error('Error calling Gemini API for description:', error);
+            generatedDescriptionOutput.textContent = 'Error generating description. Check console for details.';
+            generatedDescriptionOutput.style.color = '#F44336'; // Red for error
+            showMessage('AI description failed.', 'error');
+        }
+    }
+
+    /**
+     * Calls the Gemini API to analyze the sentiment of product reviews.
+     * @param {string} productName - The name of the product.
+     * @param {string} reviewsText - A compilation of customer reviews for the product.
+     */
+    async function analyzeProductReviews(productName, reviewsText) {
+        if (!reviewsText.trim()) {
+            reviewSentimentOutput.classList.remove('hidden');
+            reviewSentimentOutput.textContent = 'No review text available for analysis.';
+            reviewSentimentOutput.style.color = '#F44336';
+            return;
+        }
+
+        reviewSentimentOutput.classList.remove('hidden');
+        reviewSentimentOutput.textContent = 'Analyzing reviews...';
+        reviewSentimentOutput.style.color = '#60A5FA'; // Blue for loading
+
+        try {
+            const prompt = `Analyze the overall sentiment of the following customer reviews for "${productName}". Summarize the sentiment (positive, negative, mixed) and highlight key pros and cons mentioned. Reviews: "${reviewsText}"`;
+
+            let chatHistory = [];
+            chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+            const payload = { contents: chatHistory };
+            const apiKey = ""; // Canvas provides API key at runtime
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+            if (result.candidates && result.candidates.length > 0 &&
+                result.candidates[0].content && result.candidates[0].content.parts &&
+                result.candidates[0].content.parts.length > 0) {
+                const text = result.candidates[0].content.parts[0].text;
+                reviewSentimentOutput.textContent = text;
+                reviewSentimentOutput.style.color = ''; // Reset color
+                showMessage('Review sentiment analyzed!', 'success');
+            } else {
+                reviewSentimentOutput.textContent = 'Failed to analyze sentiment. Please try again.';
+                reviewSentimentOutput.style.color = '#F44336'; // Red for error
+                console.error('Gemini API response structure unexpected:', result);
+                showMessage('Review analysis failed.', 'error');
+            }
+        } catch (error) {
+            console.error('Error calling Gemini API for sentiment analysis:', error);
+            reviewSentimentOutput.textContent = 'Error analyzing reviews. Check console for details.';
+            reviewSentimentOutput.style.color = '#F44336'; // Red for error
+            showMessage('AI description failed.', 'error');
+        }
+    }
+
+
+    // --- Event Listeners ---
+
+    // Mobile Menu Toggle
+    mobileMenuBtn.addEventListener('click', () => {
+      toggleVisibility(mobileMenu);
+    });
+
+    // Dark Mode Toggle
+    darkModeToggle.addEventListener('click', () => {
+      applyDarkMode();
+    });
+
+    // Cart Sidebar Toggle
+    cartBtn.addEventListener('click', () => {
+      cartSidebar.classList.add('open');
+    });
+    closeCart.addEventListener('click', () => {
+      cartSidebar.classList.remove('open');
+    });
+
+    // Login Modal Toggle
+    accountBtn.addEventListener('click', () => {
+      toggleVisibility(loginModal, true);
+    });
+    mobileAccountBtn.addEventListener('click', () => { // For mobile menu account button
+      toggleVisibility(mobileMenu, false); // Close mobile menu first
+      toggleVisibility(loginModal, true);
+    });
+    closeLoginModal.addEventListener('click', () => {
+      toggleVisibility(loginModal, false);
+    });
+
+    // Login/Register Tab Switching
+    loginTab.addEventListener('click', () => {
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      loginTab.classList.add('border-indigo-600', 'dark:text-white');
+      loginTab.classList.remove('text-gray-500', 'hover:text-indigo-600', 'dark:hover:text-indigo-400');
+      registerTab.classList.remove('border-indigo-600', 'dark:text-white');
+      registerTab.classList.add('text-gray-500', 'hover:text-indigo-600', 'dark:hover:text-indigo-400');
+    });
+    registerTab.addEventListener('click', () => {
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      registerTab.classList.add('border-indigo-600', 'dark:text-white');
+      registerTab.classList.remove('text-gray-500', 'hover:text-indigo-600', 'dark:hover:text-indigo-400');
+      loginTab.classList.remove('border-indigo-600', 'dark:text-white');
+      loginTab.classList.add('text-gray-500', 'hover:text-indigo-600', 'dark:hover:text-indigo-400');
+    });
+
+    // Login/Register Submission (using backend APIs)
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      await handleLogin(email, password);
+    });
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('registerName').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      await handleRegister(name, email, password);
+    });
+
+    // Product Filtering and Sorting
+    filterCategory.addEventListener('change', filterAndSortProducts);
+    filterSort.addEventListener('change', filterAndSortProducts);
+
+    // Load More Products
+    loadMoreBtn.addEventListener('click', loadMoreProducts);
+
+    // Event delegation for Add to Cart and Quick View buttons on product grid
+    productGrid.addEventListener('click', (event) => {
+      const addToCartBtn = event.target.closest('.add-to-cart-btn');
+      const quickViewBtn = event.target.closest('.quick-view-btn');
+
+      if (addToCartBtn) {
+        const productId = addToCartBtn.dataset.productId;
+        addToCart(productId);
+      } else if (quickViewBtn) {
+        const productId = quickViewBtn.dataset.productId;
+        openQuickViewModal(productId);
+      }
+    });
+
+    // Quick View Modal Add to Cart
+    quickViewAddToCartBtn.addEventListener('click', () => {
+      const productId = quickViewAddToCartBtn.dataset.productId;
+      const quantity = parseInt(quickViewQuantity.textContent);
+      addToCart(productId, quantity);
+      toggleVisibility(quickViewModal, false); // Close quick view after adding to cart
+      cartSidebar.classList.add('open'); // Open cart sidebar
+    });
+
+    // Quick View Quantity Controls
+    quickViewQuantityMinus.addEventListener('click', () => {
+      let currentQuantity = parseInt(quickViewQuantity.textContent);
+      if (currentQuantity > 1) {
+        quickViewQuantity.textContent = currentQuantity - 1;
+      }
+    });
+    quickViewQuantityPlus.addEventListener('click', () => {
+      let currentQuantity = parseInt(quickViewQuantity.textContent);
+      quickViewQuantity.textContent = currentQuantity + 1;
+    });
+
+    // Close Quick View Modal
+    closeQuickViewBtn.addEventListener('click', () => {
+      toggleVisibility(quickViewModal, false);
+    });
+
+    // Event delegation for cart item quantity and remove buttons
+    cartItemsContainer.addEventListener('click', (event) => {
+      const minusBtn = event.target.closest('.cart-quantity-minus');
+      const plusBtn = event.target.closest('.cart-quantity-plus');
+      const removeBtn = event.target.closest('.remove-from-cart-btn');
+
+      if (minusBtn) {
+        const productId = minusBtn.dataset.productId;
+        const item = cart.find(i => i.id === productId);
+        if (item) {
+          updateCartItemQuantity(productId, item.quantity - 1);
+        }
+      } else if (plusBtn) {
+        const productId = plusBtn.dataset.productId;
+        const item = cart.find(i => i.id === productId);
+        if (item) {
+          updateCartItemQuantity(productId, item.quantity + 1);
+        }
+      } else if (removeBtn) {
+        const productId = removeBtn.dataset.productId;
+        removeFromCart(productId);
+      }
+    });
+
+    // Checkout Button (mock functionality)
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      if (cart.length > 0) {
+        showMessage('Proceeding to checkout... (This is a demo, no actual purchase will be made)', 'info');
+        // In a real app, this would involve sending the cart data to the backend
+        // to create an order and initiate payment processing.
+      } else {
+        showMessage('Your cart is empty. Add some items before checking out!', 'error');
+      }
+    });
+
+    // --- New LLM Button Event Listeners ---
+    generateDescriptionBtn.addEventListener('click', () => {
+        const productName = generateDescriptionBtn.dataset.productName;
+        const currentDescription = generateDescriptionBtn.dataset.productDescription;
+        if (productName && currentDescription) {
+            generateProductDescription(productName, currentDescription);
+        } else {
+            showMessage('Product information not available for AI description.', 'error');
+        }
+    });
+
+    analyzeReviewsBtn.addEventListener('click', () => {
+        const productName = analyzeReviewsBtn.dataset.productName;
+        const reviewsText = analyzeReviewsBtn.dataset.productReviewsText;
+        if (productName && reviewsText) {
+            analyzeProductReviews(productName, reviewsText);
+        } else {
+            showMessage('No review text available for AI analysis for this product.', 'error');
+            reviewSentimentOutput.classList.remove('hidden');
+            reviewSentimentOutput.textContent = 'No review text available for analysis.';
+            reviewSentimentOutput.style.color = '#F44336';
+        }
+    });
+
+
+    // --- Initial Setup ---
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load dark mode preference
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        applyDarkMode(true);
+      } else {
+        applyDarkMode(false);
+      }
+
+      // Load cart from local storage (still client-side for this demo)
+      loadCartFromLocalStorage();
+      updateCartUI();
+
+      // Fetch and render initial products from the backend
+      fetchAndRenderProducts();
+    });
+  </script>
+</body>
+</html>
